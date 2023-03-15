@@ -2,3 +2,9 @@
 Models/bert_model.h5
 Models/best_model.h5
 Tokenizers/tokenizer.pickle
+Tokenizers/tokenizerBERT.pickle
+Encoder/encoder_lstm.pickle
+Encoder/labels_one_hot.npy
+venv/
+*.pyc
+
