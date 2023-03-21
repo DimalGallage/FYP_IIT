@@ -6,6 +6,7 @@ function UploadForm() {
     const [inputType, setInputType] = useState("text");
     const [fileInput, setFileInput] = useState("");
     const [textInput, setTextInput] = useState("");
+
     const [sentences, setSentences] = useState([]);
     const [labels,setLabels] = useState([]);
     // const history = useHistory();
@@ -32,10 +33,18 @@ function UploadForm() {
     setFileInput(event.target.files[0].name);
     const file = event.target.files[0];
     const reader = new FileReader();
+
+    console.log(reader)
+
     reader.onload = () => {
       const lines = reader.result.split("\n");
       const sentences = lines.filter((line) => line.trim() !== "")
-                            .map((line) => line.split(",")[0]);
+                            .map((line) => line.split(",")[0])
+                            .map((sentence) => sentence.replace(/\r$/, ""))
+                            .map((sentence) => sentence.replace(/\\/g, ""))
+                            .map((sentence) => sentence.replace(/"/g, ""))
+                            .map((sentence) => sentence.replace(/'/g, ""));
+
       setSentences(sentences);
     };
     reader.readAsText(file);
@@ -48,36 +57,46 @@ function UploadForm() {
   function handleSubmit(event) {
     event.preventDefault();
     if(inputType === "text"){
-        const input = inputType === "file" ? fileInput : textInput;
-        query({ "inputs": input }).then((response) => {
-            console.log(response)
-            if(response[0][0].label === "LABEL_0"){
-                console.log("Regular")
-            }else{
-                console.log("Sarcasm")
-            }
-            window.location.href = '/dashboard';
-        });
+        // const input = inputType === "file" ? fileInput : textInput;
+        // query({ "inputs": input }).then((response) => {
+        //     console.log(response)
+        //     if(response[0][0].label === "LABEL_0"){
+        //         console.log("Regular")
+        //     }else{
+        //         console.log("Sarcasm")
+        //     }
+        //     window.location.href = '/dashboard';
+        // });
     }else{
         console.log(sentences)
-        const classLabels = []
-        sentences.forEach(line => {
-            query({ "inputs": line }).then((response) => {
-                if(response){
+        // console.log(sentences[0])
 
-                }
-                if(response[0][0].label === "LABEL_0"){
-                    console.log("Regular")
-                    classLabels.push("Regular")
-                }else{
-                    console.log("Sarcasm")
-                    classLabels.push("Sarcasm")
-                }
-            });
+        // payload = {
+        //   'sentence':JSON.stringify({ sentences }) 
+        // }
+        // setPayload(
+        //   {
+        //     'sentence':JSON.stringify({ sentences }) 
+        //   }
+        // )
+
+
+        fetch('http://localhost:5000/getClass', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ sentences })
+        })
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem('responseData', JSON.stringify(data));
+            // history.push('/dashboard');
+            window.location.href = '/dashboard';
+          })
+          .catch(error => {
+            console.error('Error:', error);
         });
-        setLabels(classLabels)
-        console.log("labels- ",labels)
-        window.location.href = '/dashboard';
     }
 
     

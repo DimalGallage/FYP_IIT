@@ -21,7 +21,7 @@ def get_class_label(preprocessed_sequence, model_file, encoder_file):
     
     # Predict the class label
     prediction = model.predict(input_sequence)
-    print("################################## lstm prediction" ,prediction,"#############")
+    # print("################################## lstm prediction" ,prediction,"#############")
     # Decode the predicted label
     # predicted_label = encoder.inverse_transform([np.argmax(prediction)])
     # print(predicted_label)

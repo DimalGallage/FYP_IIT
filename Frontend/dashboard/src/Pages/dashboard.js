@@ -1,4 +1,4 @@
-import React, { useState }  from "react";
+import React, { useState, useEffect }  from "react";
 import Navbar from '../Components/NavBar/Navbar'
 import Footer from '../Components/Footer/Footer';
 import Header from '../Components/Dashboard/Header';
@@ -12,28 +12,64 @@ function Dashboard() {
   const [regularNumber, setRegularNumber] = useState(20);
   const [totalNumber, setTotalNumber]     = useState(130)
 
-  const [classArr, setClassArr] = useState(["Regular","Regular","Regular","Sarcasm","Sarcasm","Sarcasm",]);
-  const [sentenceArr, setSentenceArr] = useState(["Hello World 1","Hello World 2","Hello World 3","Hello World 4","Hello World 5","Hello World 5"]);
+  const [classArr, setClassArr] = useState([]);
+  // const [sentenceArr, setSentenceArr] = useState(["Hello World 1","Hello World 2","Hello World 3","Hello World 4","Hello World 5","Hello World 5"]);
 
   // const [sarcsmArr, sarcasmArr] = useState(["Hello World 1","Hello World 2","Hello World 3"]);
   // const [regularArr, setRegularArr] = useState(["Hello World 4","Hello World 5","Hello World 5"]);
-  let sarcasmArr = ["Hello World 1","Hello World 2","Hello World 3"];
-  let regularArr = ["Hello World 4","Hello World 5","Hello World 5"];
+  // let sarcasmArr = ["Hello World 1","Hello World 2","Hello World 3"];
+  // let regularArr = ["Hello World 4","Hello World 5","Hello World 5"];
 
-  console.log(sarcasmArr)
+  // console.log(sarcasmArr)
+  useEffect(() => {
+
+    let responseData = JSON.parse(localStorage.getItem("responseData"));
+    console.log(responseData.labels.length)
+    setClassArr(responseData.labels)
+
+    setTotalNumber(responseData.labels.length)
+    console.log("Total",totalNumber)
+
+    let sarcasmCounter = 0
+    responseData.labels.forEach(element => {
+      if(element.class === 'Sarcasm'){
+        sarcasmCounter = sarcasmCounter+1
+      }
+    });
+    setSarcasmNumber(sarcasmCounter)
+    setRegularNumber(totalNumber-sarcasmCounter)
+    console.log("Sarcasm",sarcasmNumber)
+    console.log("Regular",regularNumber)
+
+
+  }, []);
+
+
+  // changeClass = (sentence) => {
+    
+  // }
+  // deleteRecord = () => {
+
+  // }
+
+
+
 
   return (
     <div>
       <Navbar/>
 
       <div className="dashboard">
+
         <div className="column">
           <PieChart sarcasmNumber={sarcasmNumber} regularNumber={regularNumber}/>
           <Header sarcasmNumber={sarcasmNumber} totalNumber={totalNumber}/>
         </div>
+
         <div className="column">
           <div className="downloadFile">DonwloadFile</div>
         </div>
+
       </div>
 
 
@@ -44,18 +80,29 @@ function Dashboard() {
             <h1 className="heading">Sarcasm Class</h1>
             <p className="columnIntro">Following Records are the sarcastic Tweets found in the dataset. You can delete them or manually change the data record class</p>
             <div className='datalist'>
-              {sarcasmArr.map((sentence, index) => (
-                <DataRecord key={index} sentence={sentence} label="Sarcasm" />
-              ))}
+
+
+              {/* {sarcasmArr.map((sentence, index) => (
+                  <DataRecord key={index} sentence={sentence} label="Sarcasm" />
+              ))} */}
+
+              {classArr.map((item, index) => {
+                  return item.class === "Sarcasm" ? (
+                    <DataRecord key={index} sentence={item.sentence} label="Sarcasm" />
+                  ) : (null);
+              })}
+
+
+
             </div>
         </div>
         <div className="column">
             {/* data list for regular class */}
             <h1 className="heading">Regular Class</h1>
             <p className="columnIntro">Following Records are the regular Tweets found in the dataset. You can delete them or manually change the data record class</p>
-            {regularArr.map((sentence, index) => (
+            {/* {regularArr.map((sentence, index) => (
                 <DataRecord key={index} sentence={sentence} label="Regular" />
-              ))}
+              ))} */}
         </div>
       </div>
 

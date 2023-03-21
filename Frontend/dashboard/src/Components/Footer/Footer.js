@@ -1,10 +1,11 @@
 import './Footer.css';
+import logo from '../../StaticAssets/logo.png'
 
 function Footer() {
   return (
     <div className="footer">
         <div className="footer-column">
-        <img src="/logo.png" alt="Logo" className="logo" />
+        <img src={logo} alt="Logo" className="logo" width="30%" />
         </div>
 
         {/*  */}
