@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './uploadForm.css';
+import SpinnerOverlay from '../LoadingScreen/loader';
 // import { useHistory } from 'react-router-dom';
 
 function UploadForm() {
@@ -10,20 +11,21 @@ function UploadForm() {
     const [sentences, setSentences] = useState([]);
     const [labels,setLabels] = useState([]);
     // const history = useHistory();
+    const [isLoading, setIsLoading] = useState(false);
 
 
-  async function query(data) {
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/helinivan/english-sarcasm-detector",
-      {
-        headers: { Authorization: "Bearer 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" },
-        method: "POST",
-        body: JSON.stringify(data),
-      }
-    );
-    const result = await response.json();
-    return result;
-  }
+  // async function query(data) {
+  //   const response = await fetch(
+  //     "https://api-inference.huggingface.co/models/helinivan/english-sarcasm-detector",
+  //     {
+  //       headers: { Authorization: "Bearer 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" },
+  //       method: "POST",
+  //       body: JSON.stringify(data),
+  //     }
+  //   );
+  //   const result = await response.json();
+  //   return result;
+  // }
 
   function handleInputTypeChange(event) {
     setInputType(event.target.value);
@@ -57,30 +59,10 @@ function UploadForm() {
   function handleSubmit(event) {
     event.preventDefault();
     if(inputType === "text"){
-        // const input = inputType === "file" ? fileInput : textInput;
-        // query({ "inputs": input }).then((response) => {
-        //     console.log(response)
-        //     if(response[0][0].label === "LABEL_0"){
-        //         console.log("Regular")
-        //     }else{
-        //         console.log("Sarcasm")
-        //     }
-        //     window.location.href = '/dashboard';
-        // });
+
     }else{
         console.log(sentences)
-        // console.log(sentences[0])
-
-        // payload = {
-        //   'sentence':JSON.stringify({ sentences }) 
-        // }
-        // setPayload(
-        //   {
-        //     'sentence':JSON.stringify({ sentences }) 
-        //   }
-        // )
-
-
+        setIsLoading(true);
         fetch('http://localhost:5000/getClass', {
           method: 'POST',
           headers: {
@@ -91,7 +73,6 @@ function UploadForm() {
         .then(response => response.json())
         .then(data => {
             localStorage.setItem('responseData', JSON.stringify(data));
-            // history.push('/dashboard');
             window.location.href = '/dashboard';
           })
           .catch(error => {
@@ -104,6 +85,7 @@ function UploadForm() {
 
   return (
     <div className="upload__container">
+      {isLoading && <SpinnerOverlay />}
         <form onSubmit={handleSubmit}>
             <div>
                 <input

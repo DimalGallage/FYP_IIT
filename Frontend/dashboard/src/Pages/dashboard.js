@@ -5,54 +5,95 @@ import Header from '../Components/Dashboard/Header';
 import './dashboard.css'
 import PieChart from '../Components/Dashboard/PieChart';
 import DataRecord from "../Components/Dashboard/DataRecord";
+import CsvDownloadButton from 'react-json-to-csv'
 
 function Dashboard() {
 
   const [sarcasmNumber, setSarcasmNumber] = useState(110);
   const [regularNumber, setRegularNumber] = useState(20);
   const [totalNumber, setTotalNumber]     = useState(130)
-
   const [classArr, setClassArr] = useState([]);
-  // const [sentenceArr, setSentenceArr] = useState(["Hello World 1","Hello World 2","Hello World 3","Hello World 4","Hello World 5","Hello World 5"]);
 
-  // const [sarcsmArr, sarcasmArr] = useState(["Hello World 1","Hello World 2","Hello World 3"]);
-  // const [regularArr, setRegularArr] = useState(["Hello World 4","Hello World 5","Hello World 5"]);
-  // let sarcasmArr = ["Hello World 1","Hello World 2","Hello World 3"];
-  // let regularArr = ["Hello World 4","Hello World 5","Hello World 5"];
+  const [cleanedArr, setCleanedArr] = useState([]);
 
-  // console.log(sarcasmArr)
+  
   useEffect(() => {
 
     let responseData = JSON.parse(localStorage.getItem("responseData"));
     console.log(responseData.labels.length)
     setClassArr(responseData.labels)
-
-    setTotalNumber(responseData.labels.length)
-    console.log("Total",totalNumber)
+    let totalcount = responseData.labels.length
+    setTotalNumber(totalcount)
 
     let sarcasmCounter = 0
+    let tempCleanedArr = []
     responseData.labels.forEach(element => {
       if(element.class === 'Sarcasm'){
         sarcasmCounter = sarcasmCounter+1
+      }else{
+        tempCleanedArr.push({"Tweet":element.sentence})
       }
     });
+    setCleanedArr(tempCleanedArr)
     setSarcasmNumber(sarcasmCounter)
-    setRegularNumber(totalNumber-sarcasmCounter)
+    setRegularNumber(totalcount-sarcasmCounter)
     console.log("Sarcasm",sarcasmNumber)
     console.log("Regular",regularNumber)
 
+    console.log(cleanedArr)
 
   }, []);
 
 
-  // changeClass = (sentence) => {
-    
-  // }
-  // deleteRecord = () => {
+  const organizeDownloadFile = () => {
+    let responseData = JSON.parse(localStorage.getItem("responseData"));
+    let tempCleanedArr = []
+    responseData.labels.forEach(element => {
+      console.log(element)
+      if(element.class !== 'Sarcasm'){
+        tempCleanedArr.push({"Tweet":element.sentence})
+      }
+    });
+    setCleanedArr(tempCleanedArr)
 
-  // }
+  }
+
+  const changeClass = (sentence,label) => {
+
+    const updatedArr = classArr.map(record => {
+      if (record.sentence !== sentence) {
+        return record;
+      } else {
+        if(label === "Sarcasm"){
+
+          return {
+            ...record,
+            class: "Regular",
+          };
+
+        }else{
+
+          return {
+            ...record,
+            class: "Sarcasm",
+          };
+
+        }
+      }
+    });
+    setClassArr(updatedArr);
+    localStorage.setItem('responseData', JSON.stringify({"labels":updatedArr}));
+    console.log(classArr)
+    organizeDownloadFile()
+  }
 
 
+  const deleteRecord = (stenence) => {
+    const updatedClassArr = classArr.filter(obj => obj.sentence !== stenence);
+    setClassArr(updatedClassArr)
+    localStorage.setItem('responseData', JSON.stringify({"labels":updatedClassArr}));
+    organizeDownloadFile()
+  }
 
 
   return (
@@ -68,6 +109,7 @@ function Dashboard() {
 
         <div className="column">
           <div className="downloadFile">DonwloadFile</div>
+          <CsvDownloadButton data={cleanedArr}  />
         </div>
 
       </div>
@@ -88,7 +130,7 @@ function Dashboard() {
 
               {classArr.map((item, index) => {
                   return item.class === "Sarcasm" ? (
-                    <DataRecord key={index} sentence={item.sentence} label="Sarcasm" />
+                    <DataRecord key={index} sentence={item.sentence} label="Sarcasm" deleteRecord={deleteRecord} changeClass={changeClass}/>
                   ) : (null);
               })}
 
@@ -103,6 +145,13 @@ function Dashboard() {
             {/* {regularArr.map((sentence, index) => (
                 <DataRecord key={index} sentence={sentence} label="Regular" />
               ))} */}
+
+                {classArr.map((item, index) => {
+                  return item.class === "Regular" ? (
+                    <DataRecord key={index} sentence={item.sentence} label="Regular" deleteRecord={deleteRecord}  changeClass={changeClass}/>
+                  ) : (null);
+                })}
+
         </div>
       </div>
 

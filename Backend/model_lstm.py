@@ -10,9 +10,6 @@ def get_class_label(preprocessed_sequence, model_file, encoder_file):
     with open(encoder_file, 'rb') as handle:
         encoder = pickle.load(handle)
     
-    # Pad the preprocessed sequence to a fixed length of 25
-    #padded_sequence = pad_sequence(preprocessed_sequence, max_length=25)
-    
     # Convert the sequence to a numpy array
     input_sequence = np.array(preprocessed_sequence)
     
@@ -21,9 +18,5 @@ def get_class_label(preprocessed_sequence, model_file, encoder_file):
     
     # Predict the class label
     prediction = model.predict(input_sequence)
-    # print("################################## lstm prediction" ,prediction,"#############")
-    # Decode the predicted label
-    # predicted_label = encoder.inverse_transform([np.argmax(prediction)])
-    # print(predicted_label)
     
     return prediction[0][0]

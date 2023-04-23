@@ -4,6 +4,7 @@ from preprocess import preprocess
 from model_lstm import get_class_label
 from preprocessBERT import preprocessBERT
 from model_bert import get_class_label_bert
+from model_cnn import get_class_label_cnn
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -38,11 +39,12 @@ def home():
 
     #preprocess sentence for both models
         preprocess_sentence_lstm = preprocess(line)
+        preprocess_sentence_cnn = preprocess(line)
         preprocess_inputs_bert = preprocessBERT(line)
     
     #get the output for both models
-        sarcasm_percentage_lstm = get_class_label(preprocess_sentence_lstm,"../Models/LSTMOptimized.h5","../Encoder/encoder_lstm.pickle")
-        sarcasm_percentage_bert = get_class_label_bert(preprocess_inputs_bert)
+        sarcasm_percentage_lstm = get_class_label(preprocess_sentence_lstm,"../Models/LSTMOptimized(1).h5","../Encoder/encoder_lstm.pickle")
+        sarcasm_percentage_cnn = get_class_label_cnn(preprocess_sentence_cnn,"../Models/CNNOptimized.h5","../Encoder/encoder_lstm.pickle")
 
 
     # print('.')
@@ -54,14 +56,14 @@ def home():
     # print('.')
     # print('.')
     # print('.')
-        print("BERT:-",sarcasm_percentage_bert)
+        print("CNN:-",sarcasm_percentage_cnn)
 
         label = ''
 
-        lstm_weight = 0.4
-        bert_weight = 0.6
+        lstm_weight = 0.5
+        cnn_weight = 0.5
 
-        weighted_avg = sarcasm_percentage_lstm*lstm_weight+sarcasm_percentage_bert*bert_weight
+        weighted_avg = sarcasm_percentage_lstm*lstm_weight+sarcasm_percentage_cnn*cnn_weight
         if(weighted_avg>=0.5):
             label = 'Sarcasm'
         else:

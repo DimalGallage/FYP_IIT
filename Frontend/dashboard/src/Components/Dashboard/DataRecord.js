@@ -7,28 +7,33 @@ import ChangeCircleIcon from '@mui/icons-material/ChangeCircle';
 import Tooltip from '@mui/material/Tooltip';
 
 function DataRecord(props) {
-  return (
-    <div className="DataRecord">
-        <div className='sentence'>
-            {props.sentence}
+
+    // const deleteRecord = (props) => {
+    //     return props.sentence;
+    // };
+
+    return (
+        <div className="DataRecord">
+            <div className='sentence'>
+                {props.sentence}
+            </div>
+            <div className='label'><Chip label={props.label} size='large'color='primary' /></div>
+            <div className='change'>
+                <Tooltip title="Change Class">
+                    <IconButton aria-label="delete" size="large"  onClick={() => props.changeClass(props.sentence,props.label)}>
+                        <ChangeCircleIcon fontSize="inherit" color='primary'/>
+                    </IconButton>
+                </Tooltip>
+            </div>
+            <div className='delete'>
+                <Tooltip title="Delete Record">
+                    <IconButton aria-label="delete" size="large" onClick={() => props.deleteRecord(props.sentence)}>
+                        <DeleteIcon fontSize="inherit" color='error'/>
+                    </IconButton>
+                </Tooltip>
+            </div>
         </div>
-        <div className='label'><Chip label={props.label} size='large'color='primary' /></div>
-        <div className='change'>
-            <Tooltip title="Change Class">
-                <IconButton aria-label="delete" size="large">
-                    <ChangeCircleIcon fontSize="inherit" color='primary'/>
-                </IconButton>
-            </Tooltip>
-        </div>
-        <div className='delete'>
-            <Tooltip title="Delete Record">
-                <IconButton aria-label="delete" size="large">
-                    <DeleteIcon fontSize="inherit" color='error'/>
-                </IconButton>
-            </Tooltip>
-        </div>
-    </div>
-  );
+    );
 }
 
 export default DataRecord;
